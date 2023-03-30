@@ -8,16 +8,16 @@ wkdir=/usr/local/SU2
 cd $wkdir
 
 # The next block was added due to compilation issues with CoDi, MeDi, Meson, Ninja, and Mutationpp
-sudo rm -r $wkdir/externals/codi
-sudo rm -r $wkdir/externals/medi
-sudo rm -r $wkdir/externals/meson
-sudo rm -r $wkdir/externals/ninja
-sudo rm -r $wkdir/subprojects/Mutationpp
-sudo mkdir $wkdir/externals/codi
-sudo mkdir $wkdir/externals/medi
-sudo mkdir $wkdir/externals/meson
-sudo mkdir $wkdir/externals/ninja
-sudo mkdir $wkdir/subprojects/Mutationpp
+#sudo rm -r $wkdir/externals/codi
+#sudo rm -r $wkdir/externals/medi
+#sudo rm -r $wkdir/externals/meson
+#sudo rm -r $wkdir/externals/ninja
+#sudo rm -r $wkdir/subprojects/Mutationpp
+#sudo mkdir $wkdir/externals/codi
+#sudo mkdir $wkdir/externals/medi
+#sudo mkdir $wkdir/externals/meson
+#sudo mkdir $wkdir/externals/ninja
+#sudo mkdir $wkdir/subprojects/Mutationpp
 
 # Set the initial environmental variables
 export MPICC=/usr/bin/mpicc
@@ -56,7 +56,7 @@ while [ "$build_counter" -le 3 ]; do
 	export SU2_MPI_COMMAND="mpirun --hostfile /etc/JARVICE/nodes -np %i %s"
 
 	# Install with ninja
-	./ninja -C nimbix_build install
+	./ninja -C build install
 	
 	build_counter=10
 	
