@@ -38,13 +38,13 @@ while [ "$build_counter" -le 3 ]; do
 	((build_counter++))
 			
 	# Create a directory for meson
-	sudo mkdir -p $wkdir/nimbix_build
+	sudo mkdir -p $wkdir/build
 	sudo chown -R root:root $wkdir
 	sudo chmod -R 0777 $wkdir
 	
 	# Compile with meson
 	# (note that meson adds 'bin' to the --prefix directory during build)
-	./meson.py nimbix_build $flags --prefix=$wkdir/install |& tee -a build_log.txt
+	./meson.py build $flags --prefix=$wkdir/install |& tee -a build_log.txt
 
 	# Set environmental variables from meson build
 	export SU2_DATA=/data/SU2
