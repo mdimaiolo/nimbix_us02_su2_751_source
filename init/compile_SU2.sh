@@ -4,7 +4,10 @@
 sudo ln -s /usr/bin/python3 /usr/bin/python
 
 # Ensure the current working directory
-wkdir=/usr/local/SU2
+initdir=/usr/local/SU2
+cd $initdir
+git clone --branch v7.5.1 https://github.com/su2code/SU2.git
+wkdir=/usr/local/SU2/SU2
 cd $wkdir
 
 # The next block was added due to compilation issues with CoDi, MeDi, Meson, Ninja, and Mutationpp
@@ -44,7 +47,7 @@ while [ "$build_counter" -le 3 ]; do
 	
 	# Compile with meson
 	# (note that meson adds 'bin' to the --prefix directory during build)
-	./meson.py build $flags --prefix=$wkdir/install |& tee -a build_log.txt
+	sudo ./meson.py build $flags --prefix=$initdir/install | tee -a build_log.txt
 
 	# Set environmental variables from meson build
 	export SU2_DATA=/data/SU2
@@ -56,7 +59,7 @@ while [ "$build_counter" -le 3 ]; do
 	export SU2_MPI_COMMAND="mpirun --hostfile /etc/JARVICE/nodes -np %i %s"
 
 	# Install with ninja
-	./ninja -C build install
+	sudo ./ninja -C build install
 	
 	build_counter=10
 	
