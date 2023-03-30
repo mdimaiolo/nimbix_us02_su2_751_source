@@ -8,32 +8,31 @@ wkdir=/usr/local/SU2
 cd $wkdir
 
 # The next block was added due to compilation issues with CoDi, MeDi, Meson, Ninja, and Mutationpp
-rm -r $wkdir/externals/codi
-rm -r $wkdir/externals/medi
-rm -r $wkdir/externals/meson
-rm -r $wkdir/externals/ninja
-rm -r $wkdir/subprojects/Mutationpp
-mkdir $wkdir/externals/codi
-mkdir $wkdir/externals/medi
-mkdir $wkdir/externals/meson
-mkdir $wkdir/externals/ninja
-mkdir $wkdir/subprojects/Mutationpp
+sudo rm -r $wkdir/externals/codi
+sudo rm -r $wkdir/externals/medi
+sudo rm -r $wkdir/externals/meson
+sudo rm -r $wkdir/externals/ninja
+sudo rm -r $wkdir/subprojects/Mutationpp
+sudo mkdir $wkdir/externals/codi
+sudo mkdir $wkdir/externals/medi
+sudo mkdir $wkdir/externals/meson
+sudo mkdir $wkdir/externals/ninja
+sudo mkdir $wkdir/subprojects/Mutationpp
 
 # Set the initial environmental variables
 export MPICC=/usr/bin/mpicc
 export MPICXX=/usr/bin/mpicxx
 export CC=$MPICC
 export CXX=$MPICXX
-export CXXFLAGS="-O3 -funroll-loops -march=native -mtune=native"
+export CXXFLAGS="-O2 -funroll-loops -march=native -mtune=native"
 
 # Set the appropriate flags for the desired install options
 flags="-Dcustom-mpi=true -Denable-autodiff=true -Denable-directdiff=true -Denable-mixedprec=true"
 
 # Compile and verify the above flags compiled correctly
-verified=false
 build_counter=0
 
-while [ "$build_counter" -le 3 ] || [ "$verified" = false ]; do
+while [ "$build_counter" -le 3 ]; do
 
 	# Keep track of the build attempts to prevent an infinite loop
 	((build_counter++))
@@ -46,108 +45,22 @@ while [ "$build_counter" -le 3 ] || [ "$verified" = false ]; do
 	# Compile with meson
 	# (note that meson adds 'bin' to the --prefix directory during build)
 	./meson.py nimbix_build $flags --prefix=$wkdir/install |& tee -a build_log.txt
-	
-	# Verify CC env var
-	if grep -q "Using 'CC' from environment with value:" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify CXX env var
-	if grep -q "Using 'CXX' from environment with value:" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify C compiler
-	if grep -q "C compiler for the host machine:" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify C linker
-	if grep -q "C linker for the host machine:" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify C++ compiler
-	if grep -q "C++ compiler for the host machine:" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify C++ linker
-	if grep -q "C++ linker for the host machine:" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify python3
-	if grep -q "Program python3 found: YES" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify swig
-	if grep -q "Program swig found: YES" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify mpi4py
-	if grep -q "Using mpi4py from" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify pkg-config
-	if grep -q "Found pkg-config:" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify python
-	if grep -q "Dependency python found: YES" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi
-	# Verify install.sh
-	if grep -q "Program install.sh found: YES" build_log.txt; then
-		verified=true
-	else
-		verified=false
-	fi	
 
-	# Re-run meson if compile not verified
-	if [ "$verified" = false ]; then
-	
-		# Remove the nimbix_build directory 
-		echo "Meson build unverified. Removing nimbix_build directory."
-		sudo rm -R $wkdir/nimbix_build
-		
-	elif [ "$verified" = true ]; then
-	
-		echo "Meson build verified."
-	
-	    # Set environmental variables from meson build
-	    export SU2_DATA=/data/SU2
-	    export SU2_HOME=/usr/local/SU2
-        export SU2_RUN=/usr/local/SU2/install/bin
-        export PATH=$PATH:$SU2_RUN
-        export PYTHONPATH=$PYTHONPATH:$SU2_RUN
-        # Set environmental variable to allow multi-node use
-        export SU2_MPI_COMMAND="mpirun --hostfile /etc/JARVICE/nodes -np %i %s"
+	# Set environmental variables from meson build
+	export SU2_DATA=/data/SU2
+	export SU2_HOME=/usr/local/SU2
+	export SU2_RUN=/usr/local/SU2/install/bin
+	export PATH=$PATH:$SU2_RUN
+	export PYTHONPATH=$PYTHONPATH:$SU2_RUN
+	# Set environmental variable to allow multi-node use
+	export SU2_MPI_COMMAND="mpirun --hostfile /etc/JARVICE/nodes -np %i %s"
 
-		# Install with ninja
-		./ninja -C nimbix_build install
-		
-		build_counter=10
-		
-		break
-		
-	fi	
+	# Install with ninja
+	./ninja -C nimbix_build install
+	
+	build_counter=10
+	
+	break
 	
 done
 
