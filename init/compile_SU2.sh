@@ -30,7 +30,7 @@ export CXX=$MPICXX
 export CXXFLAGS="-O2 -funroll-loops -march=native -mtune=native"
 
 # Set the appropriate flags for the desired install options
-flags="-Dcustom-mpi=true -Denable-autodiff=true -Denable-directdiff=true -Denable-mixedprec=true"
+flags="-Dwith-mpi=enabled -Denable-autodiff=true -Denable-directdiff=true -Denable-mixedprec=true"
 
 # Compile and verify the above flags compiled correctly
 build_counter=0
@@ -51,7 +51,7 @@ while [ "$build_counter" -le 3 ]; do
 
 	# Set environmental variables from meson build
 	export SU2_DATA=/data/SU2
-	export SU2_HOME=/usr/local/SU2
+	export SU2_HOME=/usr/local/SU2/SU2
 	export SU2_RUN=/usr/local/SU2/install/bin
 	export PATH=$PATH:$SU2_RUN
 	export PYTHONPATH=$PYTHONPATH:$SU2_RUN
